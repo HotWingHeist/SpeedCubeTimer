@@ -4,7 +4,8 @@
         xmlns:oxy="http://oxyplot.org/wpf"
         Title="Speed Cube Timer" Height="900" Width="1200"
         WindowStartupLocation="CenterScreen"
-        Background="#F5F5F5">
+    Loaded="Window_Loaded"
+    Background="#F5F5F5">
     <Window.Resources>
         <!-- ComboBox Style -->
         <Style TargetType="ComboBox">
@@ -26,7 +27,7 @@
                     <Setter Property="Background" Value="#E3F2FD"/>
                 </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#1976D2"/>
+                    <Setter Property="Background" Value="#0173B2"/>
                     <Setter Property="Foreground" Value="#FFFFFF"/>
                 </Trigger>
             </Style.Triggers>
@@ -39,20 +40,36 @@
             <Setter Property="BorderBrush" Value="#D0D0D0"/>
         </Style>
         
-        <!-- ListBoxItem Style -->
+        <!-- ListBoxItem Style with explicit template to keep text readable when selected -->
         <Style TargetType="ListBoxItem">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Background" Value="#FFFFFF"/>
             <Setter Property="Foreground" Value="#000000"/>
             <Setter Property="Padding" Value="8,4"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#1976D2"/>
-                    <Setter Property="Foreground" Value="#FFFFFF"/>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#E3F2FD"/>
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="BorderBrush" Value="#D0D0D0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#0173B2"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
     <Grid>
@@ -71,7 +88,7 @@
                 <TextBlock Text="⏱ Speed Cube Timer" 
                            FontSize="24" 
                            FontWeight="Bold"
-                           Foreground="#1976D2"
+                           Foreground="#0173B2"
                            VerticalAlignment="Center"/>
                 <TextBlock Name="StatusText"
                            Text="Press SPACE to start"
@@ -122,7 +139,7 @@
                                Text="00:00.00" 
                                FontSize="100" 
                                FontWeight="Bold"
-                               Foreground="#1976D2"
+                               Foreground="#0173B2"
                                TextAlignment="Center"
                                FontFamily="Courier New"
                                LineHeight="Auto"/>
@@ -130,7 +147,7 @@
                     <TextBlock Name="InspectionTimerDisplay"
                                Text=""
                                FontSize="20"
-                               Foreground="#FF9800"
+                               Foreground="#DE8F05"
                                TextAlignment="Center"
                                FontFamily="Courier New"
                                Margin="0,15,0,0"/>
@@ -144,7 +161,7 @@
                         Width="120" Height="50"
                         FontSize="14"
                         Click="StartButton_Click"
-                        Background="#4CAF50"
+                        Background="#029E73"
                         Foreground="White"
                         FontWeight="Bold"
                         Cursor="Hand"
@@ -154,7 +171,7 @@
                         Width="120" Height="50"
                         FontSize="14"
                         Click="StopButton_Click"
-                        Background="#f44336"
+                        Background="#D55E00"
                         Foreground="White"
                         IsEnabled="False"
                         FontWeight="Bold"
@@ -165,12 +182,19 @@
                         Width="120" Height="50"
                         FontSize="14"
                         Click="ResetButton_Click"
-                        Background="#2196F3"
+                        Background="#0173B2"
                         Foreground="White"
                         FontWeight="Bold"
                         Cursor="Hand"
                         Margin="5,0"/>
             </StackPanel>
+
+            <!-- Quick keyboard hints to reduce confusion -->
+            <Border Background="#FFFFFF" BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,24" MaxWidth="520">
+                <TextBlock FontSize="11" Foreground="#424242">
+                    <Run Text="Space: hold 0.5s to start; tap to stop · R: reset session · Delete: remove selected solve · Click chart point to select"/>
+                </TextBlock>
+            </Border>
 
             <!-- Inspection Timer Controls -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
@@ -179,7 +203,7 @@
                         Width="120" Height="40"
                         FontSize="12"
                         Click="InspectionStartButton_Click"
-                        Background="#9C27B0"
+                        Background="#CC78BC"
                         Foreground="White"
                         FontWeight="Bold"
                         Cursor="Hand"
@@ -193,7 +217,7 @@
                         Width="100" Height="40"
                         FontSize="12"
                         Click="Plus2Button_Click"
-                        Background="#FF9800"
+                        Background="#DE8F05"
                         Foreground="White"
                         FontWeight="Bold"
                         Cursor="Hand"
@@ -203,7 +227,7 @@
                         Width="100" Height="40"
                         FontSize="12"
                         Click="DNFButton_Click"
-                        Background="#f44336"
+                        Background="#D55E00"
                         Foreground="White"
                         FontWeight="Bold"
                         Cursor="Hand"
@@ -213,7 +237,7 @@
                         Width="100" Height="40"
                         FontSize="12"
                         Click="ClearPenaltyButton_Click"
-                        Background="#1976D2"
+                        Background="#0173B2"
                         Foreground="White"
                         FontWeight="Bold"
                         Cursor="Hand"
@@ -236,15 +260,15 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                             <TextBlock Text="Best" FontSize="11" Foreground="#424242" TextAlignment="Center" Margin="0,0,0,6"/>
-                            <TextBlock Name="BestTimeText" Text="--:--" FontSize="16" FontWeight="Bold" Foreground="#1976D2" TextAlignment="Center"/>
+                            <TextBlock Name="BestTimeText" Text="--:--" FontSize="16" FontWeight="Bold" Foreground="#0173B2" TextAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                             <TextBlock Text="Average" FontSize="11" Foreground="#424242" TextAlignment="Center" Margin="0,0,0,6"/>
-                            <TextBlock Name="AverageTimeText" Text="--:--" FontSize="16" FontWeight="Bold" Foreground="#F57C00" TextAlignment="Center"/>
+                            <TextBlock Name="AverageTimeText" Text="--:--" FontSize="16" FontWeight="Bold" Foreground="#DE8F05" TextAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                             <TextBlock Text="Worst" FontSize="11" Foreground="#424242" TextAlignment="Center" Margin="0,0,0,6"/>
-                            <TextBlock Name="WorstTimeText" Text="--:--" FontSize="16" FontWeight="Bold" Foreground="#f44336" TextAlignment="Center"/>
+                            <TextBlock Name="WorstTimeText" Text="--:--" FontSize="16" FontWeight="Bold" Foreground="#D55E00" TextAlignment="Center"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -271,16 +295,23 @@
                                         Width="75" Height="26"
                                         FontSize="10"
                                         Click="DeleteButton_Click"
-                                        Background="#f44336"
+                                        Background="#D55E00"
                                         Foreground="White"
+                                                                                IsEnabled="False"
                                         FontWeight="Bold"
                                         Cursor="Hand"/>
                             </StackPanel>
+                                                        <TextBlock Name="EmptyHistoryText"
+                                                                             Text="No solves yet. Press Space to start a timed solve."
+                                                                             FontSize="11"
+                                                                             Foreground="#757575"
+                                                                             Margin="0,0,0,6"/>
                             <ListBox Name="TimesListBox" 
                                      Background="#FFFFFF"
                                      Foreground="#000000"
                                      Height="120"
                                      SelectionChanged="TimesListBox_SelectionChanged"
+                                                                         PreviewKeyDown="TimesListBox_PreviewKeyDown"
                                      BorderBrush="#D0D0D0"
                                      BorderThickness="1"
                                      Padding="8"/>

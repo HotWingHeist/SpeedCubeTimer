@@ -62,6 +62,14 @@ namespace SpeedCubeTimer
             InitializePlot();
             this.PreviewKeyDown += MainWindow_KeyDown;
             this.PreviewKeyUp += MainWindow_KeyUp;
+            UpdateHistoryUI();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Keep keyboard shortcuts responsive without extra clicks
+            this.Focus();
+            Keyboard.Focus(this);
         }
 
         private void InitializePlot()
@@ -97,11 +105,11 @@ namespace SpeedCubeTimer
             var lineSeries = new LineSeries
             {
                 Title = "Solve Times",
-                Color = OxyColor.FromRgb(76, 175, 80),
+                Color = OxyColor.FromRgb(2, 158, 115),
                 StrokeThickness = 2,
                 MarkerType = MarkerType.Circle,
                 MarkerSize = 12,
-                MarkerFill = OxyColor.FromRgb(76, 175, 80),
+                MarkerFill = OxyColor.FromRgb(2, 158, 115),
                 TrackerFormatString = "",
                 CanTrackerInterpolatePoints = false
             };
@@ -335,9 +343,11 @@ namespace SpeedCubeTimer
 
                 string formattedTime = _statisticsService.FormatTime(elapsedSeconds);
                 TimesListBox.Items.Add(formattedTime);
+                TimesListBox.ScrollIntoView(TimesListBox.Items[TimesListBox.Items.Count - 1]);
 
                 UpdateStatistics();
                 UpdatePlot();
+                UpdateHistoryUI();
                 
                 // Reset the timer after recording
                 _timerService.Reset();
@@ -367,6 +377,7 @@ namespace SpeedCubeTimer
             BestTimeText.Text = "--:--";
             WorstTimeText.Text = "--:--";
             AverageTimeText.Text = "--:--";
+            UpdateHistoryUI();
             
             // Clear the plot
             var lineSeries = _plotModel.Series[0] as OxyPlot.Series.LineSeries;
@@ -474,6 +485,7 @@ namespace SpeedCubeTimer
                     // Update UI
                     UpdateStatistics();
                     UpdatePlot();
+                    UpdateHistoryUI();
                     StatusText.Text = "Time deleted!";
                 }
             }
@@ -482,6 +494,7 @@ namespace SpeedCubeTimer
         private void TimesListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             HighlightSelectedPoint();
+            UpdateHistoryUI();
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -505,6 +518,7 @@ namespace SpeedCubeTimer
                 // Update UI
                 UpdateStatistics();
                 UpdatePlot();
+                UpdateHistoryUI();
                 StatusText.Text = "Time deleted!";
             }
             
@@ -589,11 +603,12 @@ namespace SpeedCubeTimer
             TimesListBox.Items[TimesListBox.Items.Count - 1] = newRecord.GetDisplayTime();
             UpdateStatistics();
             UpdatePlot();
+                UpdateHistoryUI();
             
             StatusText.Text = $"✓ +2 penalty applied: {newRecord.GetDisplayTime()}";
-            ((Button)sender).Background = new SolidColorBrush(Color.FromArgb(255, 230, 124, 0));
-            DNFButton.Background = new SolidColorBrush(Color.FromArgb(255, 244, 67, 54));
-            ClearPenaltyButton.Background = new SolidColorBrush(Color.FromArgb(255, 76, 175, 80));
+            ((Button)sender).Background = new SolidColorBrush(Color.FromArgb(255, 222, 143, 5));
+            DNFButton.Background = new SolidColorBrush(Color.FromArgb(255, 213, 94, 0));
+            ClearPenaltyButton.Background = new SolidColorBrush(Color.FromArgb(255, 1, 115, 178));
         }
 
         private void DNFButton_Click(object sender, RoutedEventArgs e)
@@ -619,11 +634,12 @@ namespace SpeedCubeTimer
             TimesListBox.Items[TimesListBox.Items.Count - 1] = newRecord.GetDisplayTime();
             UpdateStatistics();
             UpdatePlot();
+            UpdateHistoryUI();
             
             StatusText.Text = $"✓ DNF penalty applied: {newRecord.GetDisplayTime()}";
-            ((Button)sender).Background = new SolidColorBrush(Color.FromArgb(255, 211, 47, 47));
-            Plus2Button.Background = new SolidColorBrush(Color.FromArgb(255, 255, 152, 0));
-            ClearPenaltyButton.Background = new SolidColorBrush(Color.FromArgb(255, 76, 175, 80));
+            ((Button)sender).Background = new SolidColorBrush(Color.FromArgb(255, 204, 85, 0));
+            Plus2Button.Background = new SolidColorBrush(Color.FromArgb(255, 222, 143, 5));
+            ClearPenaltyButton.Background = new SolidColorBrush(Color.FromArgb(255, 1, 115, 178));
         }
 
         private void ClearPenaltyButton_Click(object sender, RoutedEventArgs e)
@@ -649,11 +665,12 @@ namespace SpeedCubeTimer
             TimesListBox.Items[TimesListBox.Items.Count - 1] = newRecord.GetDisplayTime();
             UpdateStatistics();
             UpdatePlot();
+            UpdateHistoryUI();
             
             StatusText.Text = $"✓ Penalty cleared: {newRecord.GetDisplayTime()}";
-            ((Button)sender).Background = new SolidColorBrush(Color.FromArgb(255, 25, 118, 210));
-            Plus2Button.Background = new SolidColorBrush(Color.FromArgb(255, 255, 152, 0));
-            DNFButton.Background = new SolidColorBrush(Color.FromArgb(255, 244, 67, 54));
+            ((Button)sender).Background = new SolidColorBrush(Color.FromArgb(255, 1, 115, 178));
+            Plus2Button.Background = new SolidColorBrush(Color.FromArgb(255, 222, 143, 5));
+            DNFButton.Background = new SolidColorBrush(Color.FromArgb(255, 213, 94, 0));
         }
 
         // Scramble Generation
@@ -691,16 +708,24 @@ namespace SpeedCubeTimer
                 
                 // Add to list display
                 TimesListBox.Items.Add(record.GetDisplayTime());
+                TimesListBox.ScrollIntoView(TimesListBox.Items[TimesListBox.Items.Count - 1]);
                 
                 // Update statistics and plot
                 UpdateStatistics();
                 UpdatePlot();
+                UpdateHistoryUI();
                 
                 // Generate new scramble
                 GenerateNewScramble();
                 
                 StatusText.Text = $"Solve #{_solveRecords.Count}: {record.GetDisplayTime()} - Use penalty buttons if needed";
             }
+        }
+
+        private void UpdateHistoryUI()
+        {
+            DeleteButton.IsEnabled = TimesListBox.SelectedIndex >= 0;
+            EmptyHistoryText.Visibility = TimesListBox.Items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }
