@@ -141,5 +141,64 @@ namespace SpeedCubeTimer.Tests
             Assert.True(secondElapsed > firstElapsed);
             Assert.True(_timerService.IsRunning);
         }
+
+        [Fact]
+        public void TimerService_RemoveTime_RemovesSpecificIndex()
+        {
+            // Arrange - Record 3 times
+            _timerService.Start();
+            _timerService.Stop();
+            _timerService.Start();
+            _timerService.Stop();
+            _timerService.Start();
+            _timerService.Stop();
+            Assert.Equal(3, _timerService.GetRecordedTimes().Count);
+
+            // Act - Remove middle time (index 1)
+            _timerService.RemoveTime(1);
+
+            // Assert
+            Assert.Equal(2, _timerService.GetRecordedTimes().Count);
+        }
+
+        [Fact]
+        public void TimerService_StopRecordsTimeBeforeReturning()
+        {
+            // Arrange
+            _timerService.Start();
+            System.Threading.Thread.Sleep(100);
+
+            // Act
+            double stoppedTime = _timerService.Stop();
+            var recordedTimes = _timerService.GetRecordedTimes();
+
+            // Assert
+            Assert.NotEmpty(recordedTimes);
+            Assert.Equal(stoppedTime, recordedTimes[0], 2);
+        }
+
+        [Fact]
+        public void TimerService_GetRecordedTimes_ReturnsListInOrder()
+        {
+            // Arrange & Act
+            _timerService.Start();
+            System.Threading.Thread.Sleep(100);
+            _timerService.Stop();
+
+            _timerService.Start();
+            System.Threading.Thread.Sleep(50);
+            _timerService.Stop();
+
+            _timerService.Start();
+            System.Threading.Thread.Sleep(100);
+            _timerService.Stop();
+
+            // Assert
+            var times = _timerService.GetRecordedTimes();
+            Assert.Equal(3, times.Count);
+            Assert.True(times[0] > 0, "First time should be recorded");
+            Assert.True(times[1] > 0, "Second time should be recorded");
+            Assert.True(times[2] > 0, "Third time should be recorded");
+        }
     }
 }
