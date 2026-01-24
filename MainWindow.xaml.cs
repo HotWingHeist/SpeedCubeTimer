@@ -53,8 +53,8 @@ namespace SpeedCubeTimer
             
             PuzzleSelection.ItemsSource = puzzles;
             PuzzleSelection.DisplayMemberPath = "Name";
-            _selectedPuzzle = puzzles[2]; // Default to 3x3
-            PuzzleSelection.SelectedIndex = 2;
+            _selectedPuzzle = puzzles.First(p => p.ShortName == "3x3");
+            PuzzleSelection.SelectedItem = _selectedPuzzle;
             GenerateNewScramble();
             
             InitializeDispatcherTimer();
@@ -495,6 +495,12 @@ namespace SpeedCubeTimer
         {
             HighlightSelectedPoint();
             UpdateHistoryUI();
+            
+            // Scroll the selected item into view
+            if (TimesListBox.SelectedIndex >= 0)
+            {
+                TimesListBox.ScrollIntoView(TimesListBox.SelectedItem);
+            }
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
